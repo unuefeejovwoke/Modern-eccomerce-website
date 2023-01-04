@@ -5,6 +5,7 @@ from cart.models import CartItem
 from .models import Product, ReviewRating
 from category.models import Category
 from django.db.models import Q
+from accounts.models import UserProfile
 
 from cart.models import CartItem
 from cart.views import _cart_id
@@ -55,11 +56,13 @@ def product_detail(request, category_slug, product_slug):
         
     # Get the reviews
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+    userprofile = get_object_or_404(UserProfile, user=request.user)
     context = {
         'single_product':single_product,
         'in_cart':in_cart,
         'orderproduct':orderproduct,
         'reviews': reviews,
+        'userprofile': userprofile,
     }
     return render(request, 'store/product_detail.html', context)
 
