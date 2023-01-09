@@ -2,7 +2,7 @@ from itertools import product
 from django.shortcuts import render, get_object_or_404, redirect
 
 from cart.models import CartItem
-from .models import Product, ReviewRating
+from .models import Product, ReviewRating, ProductGallery
 from category.models import Category
 from django.db.models import Q
 from accounts.models import UserProfile
@@ -33,9 +33,14 @@ def store(request, category_slug=None):
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
         product_count = products.count()
+        
+    reviews = None
+    for product in products:
+        reviews = ReviewRating.objects.filter(product_id=product.id, status=True)
     context = {
         'products':paged_products,
         'product_count': product_count,
+         'reviews': reviews,
     }
     return render(request, 'store/store.html', context)
 
@@ -55,14 +60,18 @@ def product_detail(request, category_slug, product_slug):
         orderproduct = None
         
     # Get the reviews
-    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True).order_by('-created_at')
     userprofile = get_object_or_404(UserProfile, user=request.user)
+     # Get the product gallery
+    product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
     context = {
         'single_product':single_product,
         'in_cart':in_cart,
         'orderproduct':orderproduct,
         'reviews': reviews,
         'userprofile': userprofile,
+        'product_gallery': product_gallery,
+        
     }
     return render(request, 'store/product_detail.html', context)
 
