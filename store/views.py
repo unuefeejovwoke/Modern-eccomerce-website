@@ -61,7 +61,7 @@ def product_detail(request, category_slug, product_slug):
         
     # Get the reviews
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True).order_by('-created_at')
-    userprofile = get_object_or_404(UserProfile, user=request.user)
+ 
      # Get the product gallery
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
     context = {
@@ -69,7 +69,7 @@ def product_detail(request, category_slug, product_slug):
         'in_cart':in_cart,
         'orderproduct':orderproduct,
         'reviews': reviews,
-        'userprofile': userprofile,
+
         'product_gallery': product_gallery,
         
     }
